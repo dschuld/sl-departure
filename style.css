@@ -1,0 +1,40 @@
+
+  h1 {
+    color: navy;
+    margin-left: 20px;
+  }
+
+  .content {  
+    font-size: 9vw;
+  }
+
+  
+  .centrum-div {
+    font-size: 14vw;
+    background-color: blue;
+    color: white;
+    height:50%;
+    text-align: center;
+    top: 50%;
+    width: 48%;
+    display: inline-block;
+  }
+
+  .solna-div {
+    background-color: lightgreen;
+    height:50%;
+    text-align: center;
+    top: 50%;
+    width: 48%;
+    display: inline-block;
+  }
+
+  .text-div-centrum {
+    position: relative;
+    top: 10%;
+  }
+
+  .text-div-station {
+    position: relative;
+    top: 5%;
+  }

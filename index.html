@@ -1,0 +1,95 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="style.css">
+  <title>SL DEPARTURES</title>
+  <script>
+
+    var CENTRUM = {
+      "direction": 2,
+      "walkingTime": 13,
+      "transportName": "Metros",
+      "url": 'https://no84anjvv1.execute-api.eu-central-1.amazonaws.com/Prod/hello?siteId=9305',
+      "divName": "centrum"
+
+    }
+
+    var STATION = {
+      "direction": 1,
+      "walkingTime": 11,
+      "transportName": "Trains",
+      "url": 'https://no84anjvv1.execute-api.eu-central-1.amazonaws.com/Prod/hello?siteId=9509',
+      "divName": "station"
+    }
+
+    STATION.format = function(data) {
+      return data.destination.substring(0, 10) + "<br> " + Math.ceil(data.time - STATION.walkingTime)
+    }
+    CENTRUM.format = function(data) {
+      return Math.ceil(data.time - CENTRUM.walkingTime)
+    }
+
+    function fetchData(config) {
+      fetch(config.url)
+        .then((response) => {
+          var json = response.json()
+          return json
+        })
+        .then(data => checkData(data, config.transportName))
+        .then(data => data.filter(trains => trains.JourneyDirection == config.direction))
+        .then(data => data.map(trains => {
+          var o = {}
+          o.time = (Date.parse(trains.ExpectedDateTime) - Date.now()) / 60000
+          o.destination = trains.Destination
+          return o
+        }))
+        .then(data => data.filter(data => data.time >= config.walkingTime))
+        .then(data => {
+          document.getElementById(config.divName + "-next").innerHTML = config.format(data[0])
+          document.getElementById(config.divName + "-after").innerHTML = config.format(data[1])
+        })
+
+    }
+
+    function checkData(data, transportName) {
+      if (data["ResponseData"]) {
+        return data["ResponseData"][transportName]
+      } else {
+        throw new Error('Data could not be retrieved');
+      }
+    }
+
+    function fetchTbana() {
+      fetchData(STATION)
+
+      fetchData(CENTRUM)
+    }
+
+    fetchTbana()
+    setInterval(fetchTbana, 60000);
+
+
+
+
+
+  </script>
+</head>
+
+<body>
+  <div class="content">
+    <div class="centrum-div">
+      <div id="centrum-next" class="text-div-centrum"></div>
+    </div>
+    <div class="centrum-div">
+      <div id="centrum-after" class="text-div-centrum"></div>
+    </div>
+    <div class="solna-div">
+      <div id="station-next" class="text-div-station"></div>
+    </div>
+    <div class="solna-div">
+      <div id="station-after" class="text-div-station"></div>
+    </div>
+  </div>
+</body>
+
+</html>
